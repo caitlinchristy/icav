@@ -71,8 +71,8 @@ You will deploy this project on your group's server.   Sprints will be graded fr
     - check out the deployment branch
     - `sudo docker compose -f <name of deployment yaml file> up -d`
     - NOTE: The `-d` flag runs Docker Compose in detached (daemon) mode, so you will not see build/startup logs in your terminal. The first build can take several minutes (pulling images, installing dependencies), so for your first few runs omit `-d` to watch progress and spot errors early.
-        - First time on the server (recommended): `sudo docker compose -f compose.deploy.yaml up --build`. Press Ctrl-C to initiate a graceful shutdown when you’re done (Compose sends signals to stop containers cleanly). 
-        - Run in the background later: `sudo docker compose -f compose.deploy.yaml up --build -d`  To stop containers started with `-d`, use: `sudo docker compose -f compose.deploy.yaml down`
+        - First time on the server (recommended): `sudo docker compose -f compose.deploy.yaml up`. Press Ctrl-C to initiate a graceful shutdown when you’re done (Compose sends signals to stop containers cleanly). 
+        - Run in the background later: `sudo docker compose -f compose.deploy.yaml up -d`  To stop containers started with `-d`, use: `sudo docker compose -f compose.deploy.yaml down`.
 1. Connect to your service
     - https://<yourgroupname>.socs.uoguelph.ca
     - you will get the security risk message, just accept it for the moment
