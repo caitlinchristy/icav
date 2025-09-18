@@ -2,92 +2,86 @@
 
 
 
-## Getting started
+## Yet Another ToDo List (YATDL)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Your team will work on this TODO list project for the first three sprints to gain some experience with the SCRUM development process, with gitlab, and with deployment.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
+## Developing with Docker
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+The project is set up as 3 separate docker containers (front end, back end, database).  You will need to [have docker installed](https://www.docker.com/products/docker-desktop/) and set up your development environment so that you can attach to a docker container and develop without having to constantly restart the container.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.socs.uoguelph.ca/cis3760f25/silver/yatdl.git
-git branch -M main
-git push -uf origin main
-```
+The Docker project provides a [list of IDEs that have docker extensions](https://www.docker.com/products/ide/)
 
-## Integrate with your tools
+## Build Tools
 
-- [ ] [Set up project integrations](https://gitlab.socs.uoguelph.ca/cis3760f25/silver/yatdl/-/settings/integrations)
+Gradle is the build tool used for the spring boot portions of this project.  You can use gradle on the command line to perform build and testing tasks.  You can also use it from within your IDE.    Windows users, you will need to make sure that line endings are set to be LF rather than the windows standard of CRLF.   You can set this in most editors.
 
-## Collaborate with your team
+Your team must choose a build tool to use with typescript.   ESBuild is one of the recommended ones but you may choose a different one as long as the whole team uses the same tool.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
 
-## Test and Deploy
+## Branching and Merging
 
-Use the built-in continuous integration in GitLab.
+  Pushes to the main branch are disabled.  Developers should make a branch for the issue they are working on and merge the branch when the issue is complete.  Merged branches may be deleted.  A code review is required in order to merge a branch.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+  The code review can be minimal for the first sprint.  During the second sprint you will focus more on code reviews.
 
-***
 
-# Editing this README
+## Testing
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Unit testing is required for Sprints Two and Three.  As you add features, you must also add tests.
 
-## Suggestions for a good README
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-## Name
-Choose a self-explaining name for your project.
+##  Deploy
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+You will deploy this project on your group's server.   Sprints will be graded from the version on the server.  You may not use the server for development.  It is deployment only.   
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+1. Make sure your project compiles, builds and runs with docker compose
+1. There are two docker compose files in the project. For deployment use the one that has deploy in the name.
+1. Edit the deployment compose file to ensure that the ngnix proxy has the correct configuration for your server and not the silver server.
+1. Edit the configuration file for the ngnix proxy in the swag folder.  You will need to edit the server name.
+1. Create a deployment branch in your git repo and merge the working, deployable version of your code to that branch.
+1. Log in to your assigned server
+    - groupname.socs.uoguelph.ca
+    - ssh to server
+    - make sure you have the vpn running or are on campus
+    - username is `socs`
+    - the password was sent to your team in your private channel
+1. On your server, create an ssh key pair
+    - `ssh-keygen -t ed25519`
+    - hit enter to skip creating a passphrase
+    - hit enter to accept default save location and filenames
+    - copy the generated key
+        - `cat ~/.ssh/id_ed25519.pub`
+        - copy the output to your clipboard
+1. Create an deploy token in gitlab
+    - navigate to the project (not the group)
+    - go to settings|repository
+    - scroll down to the `deploy keys` section
+    - add a new key
+        - the name doesn't matter
+        - paste in the copied key
+        - do not grant write permission
+        - click add key    
+1. clone your repo onto your assigned server
+    - use ssh to clone, not https
+    - the deploy key will take care of authentication. Do not use your own username/password
+    - check out the deployment branch
+    - `sudo docker compose -f <name of deployment yaml file> up -d`
+1. Connect to your service
+    - https://<yourgroupname>.socs.uoguelph.ca
+    - you will get the security risk message, just accept it for the moment
+    - check the operations of your program to make sure it is all working
+1. Remove staging flag
+    - if the program is working correctly, take it down with
+        - `sudo docker compose -f <name of deployment yaml file> down`
+    - edit the production compose file to change `staging = true` to `staging = false`
+    - restart the service
+        - `sudo docker compose -f <name of deployment yaml file> up -d`
+        - ngnix will automatically get a certificate from letsencrypt that will allow for warning-free https interactions
+        - it might take a few minutes.  Be patient
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
