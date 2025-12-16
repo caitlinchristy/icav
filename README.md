@@ -44,7 +44,7 @@ You will deploy this project on your group's server.   Sprints will be graded fr
 1. Edit the configuration file for the ngnix proxy in the swag folder.  You will need to edit the server name.
 1. Create a deployment branch in your git repo and merge the working, deployable version of your code to that branch.
 1. Log in to your assigned server
-    - groupname.socs.uoguelph.ca
+    - ```<yourgroupname>.socs.uoguelph.ca```
     - ssh to server
     - make sure you have the vpn running or are on campus
     - username is `socs`
@@ -74,17 +74,8 @@ You will deploy this project on your group's server.   Sprints will be graded fr
         - First time on the server (recommended): `sudo docker compose -f compose.deploy.yaml up`. Press Ctrl-C to initiate a graceful shutdown when you’re done (Compose sends signals to stop containers cleanly). 
         - Run in the background later: `sudo docker compose -f compose.deploy.yaml up -d`  To stop containers started with `-d`, use: `sudo docker compose -f compose.deploy.yaml down`.
 1. Connect to your service
-    - https://cis3760.socs.uoguelph.ca/groupname Note that this URL is different from the host name that you SSH into.
-    - you will get the security risk message, just accept it for the moment
+    - ```https://cis3760.socs.uoguelph.ca/<yourgroupname>``` Note that this URL is different from the host name that you SSH into.
     - check the operations of your program to make sure it is all working
-1. Remove staging flag
-    - if the program is working correctly, take it down with
-        - `sudo docker compose -f <name of deployment yaml file> down`
-    - edit the production compose file to change `staging = true` to `staging = false`
-    - restart the service
-        - `sudo docker compose -f <name of deployment yaml file> up -d`
-        - ngnix will automatically get a certificate from letsencrypt that will allow for warning-free https interactions
-        - it might take a few minutes.  Be patient
 
 
 
