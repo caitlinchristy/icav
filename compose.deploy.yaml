@@ -5,35 +5,9 @@ version: '3.8'  # Specifies the Docker Compose file version which determines the
 
 #This section defines the containers that make up your application. Each service represents a container with its configuration
 services:  # Defines the services that make up the application
-  swag: #reverse proxy
-    image: lscr.io/linuxserver/swag:latest
-    container_name: swag
-    cap_add:
-      - NET_ADMIN
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - URL=silver.socs.uoguelph.ca
-      - VALIDATION=http
-      - STAGING=true #optional
-    volumes:
-      - ./swag/config:/config
-    ports:
-      - 443:443
-      - 80:80 #optional
-    depends_on:
-      - frontend
-    networks:
-      - swag-frontend
-    restart: unless-stopped
-
   backend:  # The Spring application service
     #Build Context: build: ./spring tells Docker to build an image using the Dockerfile located in the ./spring directory.
     build: ./backend  # Builds the Docker image from the Dockerfile located in the './spring' directory
-    #Ports: ports: - "8080:8080" maps port 8080 of the container to port 8080 on the host, allowing external access to the Spring application running inside the container.
-    ports:
-      - "8080:8080"  # Exposes port 8080 on the host and maps it to port 8080 in the container
     #Environment Variables: These are passed to the container at runtime. For example, DB_ADDRESS is set to jdbc:mysql://mysql:3306, indicating the application should connect to a MySQL database at the given JDBC URL.
     environment:  # Environment variables for the Spring application
       - DB_ADDRESS=jdbc:mysql://database:3306  # JDBC URL for the MySQL database, 'mysql' is the service name in docker-compose
@@ -56,8 +30,6 @@ services:  # Defines the services that make up the application
       - mariadb_data:/var/lib/mysql  # Maps 'mariadb_data' volume to the data directory of MySQL
     networks:  # Network the MySQL service is connected to
       - backend-database  # Network for communicating with the Spring service
-    ports:
-      - "3306:3306"  # Exposes port 3306 on the host and maps it to port 3306 in the container
 
   frontend:  # The React frontend service
     build: ./frontend  # Builds the Docker image from the Dockerfile in the './react' directory
@@ -67,11 +39,9 @@ services:  # Defines the services that make up the application
       - BACKEND_PROXY=http://backend:8080  # The URL to the backend Spring service
     networks:  # Network the React service is connected to
       - backend-frontend  # Network for communicating with the backend service
-      - swag-frontend # Network to allow reverse proxy to communicate with frontend
 volumes:
   mariadb_data:  # Defines a named volume 'mariadb_data' for the MySQL service to use for data persistence
 
 networks:  # Defines the networks used by the services
   backend-database:  # Network used by the backend and database services
   backend-frontend:  # Network used by the backend and frontend services
-  swag-frontend: #Network used by the Swag and React services
