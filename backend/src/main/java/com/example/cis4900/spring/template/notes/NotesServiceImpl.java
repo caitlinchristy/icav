@@ -12,13 +12,12 @@ public class NotesServiceImpl implements NotesService {
     private NotesDao notesDao;
 
     @Override
-    public String addNote(Note newNote) {
+    public Note addNote(Note newNote) {
         try {
-            notesDao.save(newNote);
+            return notesDao.save(newNote);
         } catch (Exception exception) {
-            return exception.getMessage();
+            throw new RuntimeException(exception.getMessage());
         }
-        return "Saved";
     }
 
     @Override

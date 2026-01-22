@@ -5,9 +5,9 @@ const API_URL = '/api/notes';
 console.log('API_URL:', API_URL);  // Log the API URL
 
 export const getAllNotes = async (): Promise<Note[]> => {
-  console.log('Fetching all notes from:', `/api/notes/all`);  // Log the full endpoint
+  console.log('Fetching all notes from:', '/api/notes/all');  // Log the full endpoint
   try {
-    const response = await fetch(`/api/notes/all`);
+    const response = await fetch('/api/notes/all');
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -46,7 +46,16 @@ export const addNote = async (note: Omit<Note, 'id'>): Promise<Note> => {
       body: JSON.stringify(note),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      let errorMessage = `HTTP error! Status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+      }
+      throw new Error(errorMessage);
     }
     const data = await response.json();
     return data;
@@ -75,6 +84,11 @@ export const updateNote = async (note: Note): Promise<Note> => {
     console.error('Error updating note:', error);
     throw error;
   }
+};
+
+export const toggleNoteCompletion = async (note: Note): Promise<Note> => {
+  const updatedNote = { ...note, completed: !note.completed };
+  return updateNote(updatedNote);
 };
 
 // import { Note } from '../types/Note';
