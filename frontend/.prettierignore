@@ -1,6 +1,0 @@
-node_modules
-build
-dist
-.git
-package-lock.json
-.DS_Store
