@@ -27,7 +27,7 @@ public class NotesController {
     }
 
     @PostMapping("/add")
-    private @ResponseBody Note addNote(@RequestBody Note newNote) {
+    private @ResponseBody String addNote(@RequestBody Note newNote) {
         return notesService.addNote(newNote);
     }
 
