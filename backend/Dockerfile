@@ -44,7 +44,7 @@ COPY build.gradle ./
 
 # Warm Gradle cache so the wrapper doesn’t re-download each build
 RUN --mount=type=cache,target=/home/gradle/.gradle \
-    ./gradlew --no-daemon --version
+   bash ./gradlew --no-daemon --version
 
 # Bring in sources and build
 COPY src src

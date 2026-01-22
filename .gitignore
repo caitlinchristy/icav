@@ -132,3 +132,7 @@ ipynb_checkpoints
 # Allow Gradle wrapper JAR (needed for ./gradlew to run)
 !backend/gradle/wrapper/gradle-wrapper.jar
 
+backend/build.gradle
+backend/Dockerfile
+backend/gradlew
+backend/gradle/wrapper/gradle-wrapper.properties
