@@ -5,9 +5,9 @@ const API_URL = '/api/notes';
 console.log('API_URL:', API_URL);  // Log the API URL
 
 export const getAllNotes = async (): Promise<Note[]> => {
-  console.log('Fetching all notes from:', `/api/notes/all`);  // Log the full endpoint
+  console.log('Fetching all notes from:', '/api/notes/all');  // Log the full endpoint
   try {
-    const response = await fetch(`/api/notes/all`);
+    const response = await fetch('/api/notes/all');
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -75,6 +75,11 @@ export const updateNote = async (note: Note): Promise<Note> => {
     console.error('Error updating note:', error);
     throw error;
   }
+};
+
+export const toggleNoteCompletion = async (note: Note): Promise<Note> => {
+  const updatedNote = { ...note, completed: !note.completed };
+  return updateNote(updatedNote);
 };
 
 // import { Note } from '../types/Note';
