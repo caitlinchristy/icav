@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Note {
@@ -12,14 +13,21 @@ public class Note {
     private Integer id;
 
     private String text;
+    
+    private LocalDateTime createdDate;
+    
+    private Boolean completed = false;
 
     public Note() {
-
+        this.createdDate = LocalDateTime.now();
+        this.completed = false;
     }
 
     public Note(Integer id, String text) {
         this.id = id;
         this.text = text;
+        this.createdDate = LocalDateTime.now();
+        this.completed = false;
     }
 
     public Integer getId() {
@@ -36,5 +44,21 @@ public class Note {
 
     public void setText(String text) {
         this.text = text;
+    }
+    
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+    
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
     }
 }
