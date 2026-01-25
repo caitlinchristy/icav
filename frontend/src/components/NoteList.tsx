@@ -32,11 +32,13 @@ const NoteList: React.FC = () => {
     if (!dateString) return 'No date';
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
+      timeZone: 'America/Toronto',
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      hour12: true,
     });
   };
 
@@ -121,3 +123,4 @@ const NoteList: React.FC = () => {
 };
 
 export default NoteList;
+
