@@ -8,24 +8,34 @@ const NoteList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const notes = await getAllNotes();
-        console.log('Fetched notes:', notes); // Log the fetched notes
-        if (Array.isArray(notes)) {
-          setNotes(notes);
-        } else {
-          setError('Failed to fetch notes');
-        }
-      } catch (err) {
-        console.error('Error fetching notes:', err);
+  const fetchNotes = async () => {
+    try {
+      const notes = await getAllNotes();
+      console.log('Fetched notes:', notes); // Log the fetched notes
+      if (Array.isArray(notes)) {
+        setNotes(notes);
+      } else {
         setError('Failed to fetch notes');
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching notes:', err);
+      setError('Failed to fetch notes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchNotes();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('Auto-refreshing notes...');
+      fetchNotes();
+    }, 1000); // 1 second refresh
+
+    return () => clearInterval(interval);
   }, []);
 
   const formatDate = (dateString?: string): string => {
