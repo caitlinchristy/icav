@@ -33,7 +33,7 @@ services:  # Defines the services that make up the application
     networks:  # Network the MySQL service is connected to
       - backend-database  # Network for communicating with the Spring service
     ports:
-      - "3307:3306"  # Exposes port 3306 on the host and maps it to port 3306 in the container
+      - "3306:3306"  # Exposes port 3306 on the host and maps it to port 3306 in the container
 
   frontend:  # The React frontend service
     build: ./frontend  # Builds the Docker image from the Dockerfile in the './react' directory
