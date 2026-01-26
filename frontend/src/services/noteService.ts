@@ -91,6 +91,22 @@ export const toggleNoteCompletion = async (note: Note): Promise<Note> => {
   return updateNote(updatedNote);
 };
 
+export const getDate = async (): Promise<string> => {
+  console.log('Fetching current date from:', `${API_URL}/date`);
+  try {
+    const response = await fetch(`${API_URL}/date`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.text(); // Backend returns plain string, not JSON
+    console.log('Date response:', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching date:', error);
+    return ''; // Return empty string on error
+  }
+};
+
 // import { Note } from '../types/Note';
 
 // const testNotes: Note[] = [
