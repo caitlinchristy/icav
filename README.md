@@ -44,8 +44,8 @@ You will deploy this project on your group's server.   Sprints will be graded fr
 1. Edit the configuration file for the ngnix proxy in the swag folder.  You will need to edit the server name.
 1. Create a deployment branch in your git repo and merge the working, deployable version of your code to that branch.
 1. Log in to your assigned server
-    - ```<yourgroupname>.socs.uoguelph.ca```
-    - ssh to server
+    - ```saffron.socs.uoguelph.ca```
+    - ssh to server with `socs@saffron.socs.uoguelph.ca`
     - make sure you have the vpn running or are on campus
     - username is `socs`
     - the password was sent to your team in your private channel
@@ -65,16 +65,19 @@ You will deploy this project on your group's server.   Sprints will be graded fr
         - paste in the copied key
         - do not grant write permission
         - click add key    
-1. clone your repo onto your assigned server
+1. Clone your repo onto your assigned server
     - use ssh to clone, not https
     - the deploy key will take care of authentication. Do not use your own username/password
     - check out the deployment branch
-    - `sudo docker compose -f <name of deployment yaml file> up -d`
+    - First time on the server (recommended): `sudo docker compose -f compose.deploy.yaml up`. Press Ctrl-C to initiate a graceful shutdown when you’re done (Compose sends signals to stop containers cleanly). 
+1. Deploy new code
+    - check out the deployment branch: `git checkout deploy`
+    - use `git pull origin deploy` to pull code from the remote deploy branch
+    - if `compose.deploy.yaml` has been updated use `sudo docker compose -f compose.deploy.yaml up --build`
+    - Run in the background later: `sudo docker compose -f compose.deploy.yaml up -d`  To stop containers started with `-d`, use: `sudo docker compose -f compose.deploy.yaml down`.
     - NOTE: The `-d` flag runs Docker Compose in detached (daemon) mode, so you will not see build/startup logs in your terminal. The first build can take several minutes (pulling images, installing dependencies), so for your first few runs omit `-d` to watch progress and spot errors early.
-        - First time on the server (recommended): `sudo docker compose -f compose.deploy.yaml up`. Press Ctrl-C to initiate a graceful shutdown when you’re done (Compose sends signals to stop containers cleanly). 
-        - Run in the background later: `sudo docker compose -f compose.deploy.yaml up -d`  To stop containers started with `-d`, use: `sudo docker compose -f compose.deploy.yaml down`.
 1. Connect to your service
-    - ```https://cis3760.socs.uoguelph.ca/<yourgroupname>``` Note that this URL is different from the host name that you SSH into.
+    - ```https://cis3760.socs.uoguelph.ca/saffron``` Note that this URL is different from the host name that you SSH into.
     - check the operations of your program to make sure it is all working
 
 
