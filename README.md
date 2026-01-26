@@ -37,6 +37,8 @@ Unit testing is required for Sprints Two and Three.  As you add features, you mu
 
 You will deploy this project on your group's server.   Sprints will be graded from the version on the server.  You may not use the server for development.  It is deployment only.   
 
+Server has been configured, skip to step 10: Deploy new code
+
 
 1. Make sure your project compiles, builds and runs with docker compose
 1. There are two docker compose files in the project. For deployment use the one that has deploy in the name.
