@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import AddNote from './components/AddNote';
 import NoteList from './components/NoteList';
+import DateDisplay from './components/DateDisplay';
 
 const App: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -13,6 +14,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <h1>TODO Notes Application</h1>
+      <DateDisplay />
       <AddNote onNoteAdded={handleNoteAdded} />
       <NoteList key={refreshTrigger} />
     </div>
