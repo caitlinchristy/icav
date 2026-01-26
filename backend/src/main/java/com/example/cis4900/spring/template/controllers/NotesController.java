@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping(path = "/api/notes")
@@ -27,7 +30,7 @@ public class NotesController {
     }
 
     @PostMapping("/add")
-    private @ResponseBody String addNote(@RequestBody Note newNote) {
+    private @ResponseBody Note addNote(@RequestBody Note newNote) {
         return notesService.addNote(newNote);
     }
 
@@ -54,5 +57,12 @@ public class NotesController {
     @GetMapping("/count")
     private @ResponseBody Integer count() {
         return notesService.count();
+    }
+
+    @GetMapping("/date")
+    private @ResponseBody String getTodayDate(){
+        LocalDate today = LocalDate.now(ZoneId.of("America/Toronto"));
+        return today.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"));
+        
     }
 }

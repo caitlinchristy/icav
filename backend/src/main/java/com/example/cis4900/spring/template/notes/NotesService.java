@@ -4,7 +4,7 @@ import com.example.cis4900.spring.template.notes.models.Note;
 
 
 public interface NotesService {
-    public String addNote(Note newNote);
+    public Note addNote(Note newNote);
 
     public Note getNote(Integer id);
     

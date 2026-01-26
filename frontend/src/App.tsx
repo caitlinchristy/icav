@@ -1,24 +1,24 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import AddNote from './components/AddNote';
 import NoteList from './components/NoteList';
+import DateDisplay from './components/DateDisplay';
 
 const App: React.FC = () => {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleNoteAdded = useCallback(() => {
+    // Trigger a refresh of the notes list
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   return (
     <div className="App">
       <h1>TODO Notes Application</h1>
-      <AddNote />
-      <NoteList />
+      <DateDisplay />
+      <AddNote onNoteAdded={handleNoteAdded} />
+      <NoteList key={refreshTrigger} />
     </div>
   );
 };
-
-
-// const App: React.FC = () => {
-//   return (
-//     <div className="App">
-//       <h1>TODO Notes Application</h1>
-//     </div>
-//   );
-// };
 
 export default App;
