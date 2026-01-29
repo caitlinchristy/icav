@@ -1,0 +1,41 @@
+
+
+stages:
+  - build
+  - lint
+
+
+# BUILD STAGE
+build-backend:
+  stage: build
+  image: gradle:7.5-jdk17
+  script:
+    - cd backend
+    - gradle clean build -x test -x check
+  rules:
+    - when: always
+  allow_failure: false
+
+# LINT STAGE
+
+lint-backend:
+  stage: lint
+  image: gradle:7.5-jdk17
+  script:
+    - cd backend
+    - gradle check
+  rules:
+    - when: always
+  allow_failure: false
+
+lint-frontend:
+  stage: lint
+  image: node:16
+  script:
+    - cd frontend
+    - npm install
+    - npx eslint . --ext .js,.jsx
+  rules:
+    - when: always
+  allow_failure: false
+
