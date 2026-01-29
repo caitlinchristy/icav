@@ -17,10 +17,13 @@ public class Note {
     private Instant createdDate;
     
     private Boolean completed = false;
+    
+    private String status = "not started"; // not started, in progress, done
 
     public Note() {
         this.createdDate = Instant.now();
         this.completed = false;
+        this.status = "not started";
     }
 
     public Note(Integer id, String text) {
@@ -28,6 +31,7 @@ public class Note {
         this.text = text;
         this.createdDate = Instant.now();
         this.completed = false;
+        this.status = "not started";
     }
 
     public Integer getId() {
@@ -60,5 +64,15 @@ public class Note {
 
     public void setCompleted(Boolean completed) {
         this.completed = completed;
+    }
+    
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        if (status != null && (status.equals("not started") || status.equals("in progress") || status.equals("done"))) {
+            this.status = status;
+        }
     }
 }
