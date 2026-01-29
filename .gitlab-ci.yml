@@ -2,6 +2,7 @@
 
 stages:
   - build
+  - test
   - lint
 
 
@@ -12,6 +13,18 @@ build-backend:
   script:
     - cd backend
     - gradle clean build -x test -x check
+  rules:
+    - when: always
+  allow_failure: false
+
+# TEST STAGE
+test-frontend:
+  stage: test
+  image: node:16
+  script:
+    - cd frontend
+    - npm install
+    - npm test -- --watchAll=false --coverage
   rules:
     - when: always
   allow_failure: false
