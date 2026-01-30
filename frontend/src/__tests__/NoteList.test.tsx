@@ -35,7 +35,7 @@ describe('NoteList component', () => {
     // ensure updateNoteStatus is called with correct args
     expect(noteService.updateNoteStatus).toHaveBeenCalledWith(
       expect.objectContaining({ id: 1, status: 'done' }),
-      'done'
+      'done',
     );
 
     // getAllNotes should be called again
