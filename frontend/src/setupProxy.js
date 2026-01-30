@@ -1,4 +1,4 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
+import createProxyMiddleware from 'http-proxy-middleware';
 module.exports = function (app) {
   app.use(
     '/api',
@@ -8,15 +8,15 @@ module.exports = function (app) {
       // pathRewrite: {
       //     '^/api': '', // remove /api from the request path
       // },
-      onProxyReq: (proxyReq, req, res) => {
+      onProxyReq: (proxyReq, req) => {
         console.log('Proxying request to:', 'http://localhost:8080');
         console.log('Original request path:', req.originalUrl);
         console.log('Proxied request path:', proxyReq.path);
       },
-      onError: (err, req, res) => {
+      onError: (err) => {
         console.error('Proxy error:', err);
       },
-      onProxyRes: (proxyRes, req, res) => {
+      onProxyRes: (proxyRes) => {
         console.log('Received response from target:', proxyRes.statusCode);
       },
     }),
