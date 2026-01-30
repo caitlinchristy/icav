@@ -7,33 +7,33 @@ import * as noteService from '../services/noteService';
 jest.mock('../services/noteService');
 
 describe('AddNote behavior', () => {
-    const addNoteMock = noteService.addNote as jest.Mock;
+  const addNoteMock = noteService.addNote as jest.Mock;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        jest.spyOn(console, 'error').mockImplementation(() => { }); // silence console errors
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => { }); // silence console errors
+  });
 
-    test('calls addNote and onNoteAdded on successful submission', async () => {
-        addNoteMock.mockResolvedValue({});
-        const onNoteAdded = jest.fn();
+  test('calls addNote and onNoteAdded on successful submission', async () => {
+    addNoteMock.mockResolvedValue({});
+    const onNoteAdded = jest.fn();
 
-        render(<AddNote onNoteAdded={onNoteAdded} />);
-        fireEvent.change(screen.getByPlaceholderText(/enter your note/i), { target: { value: 'Test note' } });
-        fireEvent.click(screen.getByRole('button', { name: /add note/i }));
+    render(<AddNote onNoteAdded={onNoteAdded} />);
+    fireEvent.change(screen.getByPlaceholderText(/enter your note/i), { target: { value: 'Test note' } });
+    fireEvent.click(screen.getByRole('button', { name: /add note/i }));
 
-        await waitFor(() => expect(addNoteMock).toHaveBeenCalledWith({ text: 'Test note' }));
-        expect(onNoteAdded).toHaveBeenCalled();
-    });
+    await waitFor(() => expect(addNoteMock).toHaveBeenCalledWith({ text: 'Test note' }));
+    expect(onNoteAdded).toHaveBeenCalled();
+  });
 
-    test('shows error if addNote API call fails', async () => {
-        addNoteMock.mockRejectedValue(new Error('API error'));
+  test('shows error if addNote API call fails', async () => {
+    addNoteMock.mockRejectedValue(new Error('API error'));
 
-        render(<AddNote />);
-        fireEvent.change(screen.getByPlaceholderText(/enter your note/i), { target: { value: 'Fail note' } });
-        fireEvent.click(screen.getByRole('button', { name: /add note/i }));
+    render(<AddNote />);
+    fireEvent.change(screen.getByPlaceholderText(/enter your note/i), { target: { value: 'Fail note' } });
+    fireEvent.click(screen.getByRole('button', { name: /add note/i }));
 
-        expect(await screen.findByText(/failed to add note/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/failed to add note/i)).toBeInTheDocument();
+  });
 
 });
