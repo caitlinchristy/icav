@@ -35,9 +35,10 @@ public class NotesServiceImplTest {
         Note newNote = new Note();
         when(notesDao.save(newNote)).thenReturn(newNote);
 
-        String result = notesService.addNote(newNote);
+        Note result = notesService.addNote(newNote);
 
-        assertEquals("Saved", result);
+        assertNotNull(result);
+        assertEquals(newNote, result);
         verify(notesDao, times(1)).save(newNote);
     }
 

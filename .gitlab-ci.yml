@@ -18,7 +18,7 @@ frontend-setup:
       - frontend/node_modules/
   script:
     - cd frontend
-    - npm ci
+    - '[ -f package-lock.json ] && npm ci || npm install'
   rules:
     - when: always
 
@@ -27,7 +27,7 @@ frontend-lint:
   image: node:18
   script:
     - cd frontend
-    - npm ci
+    - '[ -f package-lock.json ] && npm ci || npm install'
     - npm run lint --if-present
   rules:
     - when: always
@@ -37,7 +37,7 @@ frontend-test:
   image: node:18
   script:
     - cd frontend
-    - npm ci
+    - '[ -f package-lock.json ] && npm ci || npm install'
     - npm test --if-present --silent
   artifacts:
     when: always
