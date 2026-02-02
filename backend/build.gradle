@@ -22,7 +22,7 @@ jacoco {
 }
 
 checkstyle {
-    toolVersion = "10.3.4"
+    toolVersion = "10.12.5"
     configFile = file("checkstyle.xml")
 }
 dependencies {
