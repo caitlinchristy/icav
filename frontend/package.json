@@ -4,7 +4,7 @@
   "scripts": {
     "build": "react-scripts build",
     "start": "react-scripts start",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
@@ -12,22 +12,26 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^13.5.0",
     "@types/node": "^14.14.41",
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.5",
-    "react-scripts": "^5.0.1",
-    "typescript": "^4.3.2",
-    "eslint": "^8.48.0",
+    "@types/stack-utils": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.48.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.3.2"
   },
   "dependencies": {
+    "ajv": "^8.12.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "ajv": "^8.12.0"
+    "react-dom": "^17.0.2"
   },
   "browserslist": {
     "production": [

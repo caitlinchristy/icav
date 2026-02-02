@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAllNotes, toggleNoteCompletion, updateNoteStatus } from '../services/noteService';
+import { getAllNotes, updateNoteStatus } from '../services/noteService';
 import { Note } from '../types/Note';
 import './NoteList.css';
 
