@@ -99,10 +99,15 @@ docker-build-push:
   stage: deploy
   image: docker:24
   services:
-    - docker:dind
+    - name: docker:24-dind
+      alias: docker
   variables:
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
   script:
+    - echo "Waiting for Docker daemon..."
+    - until docker info > /dev/null 2>&1; do sleep 1; done
     - echo "Logging into GitLab container registry"
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - echo "Building backend image"
@@ -128,7 +133,9 @@ remote-deploy:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && docker compose pull && docker compose up -d --build"
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
+    - if [ -z "$SSH_USER" ] || [ -z "$SSH_HOST" ] || [ -z "$DEPLOY_PATH" ]; then echo "Missing SSH variables (SSH_USER, SSH_HOST, DEPLOY_PATH). Set them in CI/CD settings."; exit 1; fi
+    - ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && sudo docker compose -f compose.deploy.yaml pull && sudo docker compose -f compose.deploy.yaml up -d --build"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "development"'
       when: on_success
@@ -148,9 +155,10 @@ ci-deploy:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
+    - if [ -z "$SSH_USER" ] || [ -z "$SSH_HOST" ] || [ -z "$DEPLOY_PATH" ]; then echo "Missing SSH variables (SSH_USER, SSH_HOST, DEPLOY_PATH). Set them in CI/CD settings."; exit 1; fi
     - REPO_SSH="git@$(echo $CI_SERVER_URL | sed -E 's#https?://##' | sed -E 's#/$##'):${CI_PROJECT_PATH}.git"
     - |
-      ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "set -e
+      ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "set -e
         ; mkdir -p '$DEPLOY_PATH'
         ; if [ -d '$DEPLOY_PATH/.git' ]; then
             cd '$DEPLOY_PATH' && git fetch origin && git reset --hard origin/deployment;
