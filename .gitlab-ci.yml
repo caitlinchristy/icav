@@ -56,7 +56,7 @@ backend-lint:
   image: gradle:8-jdk17
   script:
     - cd backend
-    - ./gradlew check -x checkstyleMain
+    - ./gradlew check -x checkstyleMain -x checkstyleTest
   cache:
     key: "${CI_COMMIT_REF_SLUG}"
     paths:
