@@ -9,6 +9,7 @@ module.exports = function (app) {
       changeOrigin: true,
       
       onProxyReq: (proxyReq, _req, _res) => {
+        // eslint-disable-next-line no-console
         console.log('Proxying request to:', 'http://localhost:8080');
         console.log('Original request path:', _req.originalUrl);
         console.log('Proxied request path:', proxyReq.path);
