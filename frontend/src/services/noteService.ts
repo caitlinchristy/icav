@@ -91,6 +91,11 @@ export const toggleNoteCompletion = async (note: Note): Promise<Note> => {
   return updateNote(updatedNote);
 };
 
+export const updateNoteStatus = async (note: Note, newStatus: string): Promise<Note> => {
+  const updatedNote = { ...note, status: newStatus };
+  return updateNote(updatedNote);
+};
+
 export const getDate = async (): Promise<string> => {
   console.log('Fetching current date from:', `${API_URL}/date`);
   try {

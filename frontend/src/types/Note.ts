@@ -3,4 +3,5 @@ export interface Note {
   text: string;
   createdDate?: string;
   completed?: boolean;
+  status?: string; // 'not started' | 'in progress' | 'done'
 }
