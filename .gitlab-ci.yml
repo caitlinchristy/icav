@@ -92,34 +92,6 @@ backend-build:
   rules:
     - when: always
 
-# -----------------------
-# Docker image build & push
-# -----------------------
-docker-build-push:
-  stage: deploy
-  image: docker:24
-  services:
-    - name: docker:24-dind
-      alias: docker
-  variables:
-    DOCKER_HOST: "tcp://docker:2375"
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay2
-  script:
-    - echo "Waiting for Docker daemon..."
-    - until docker info > /dev/null 2>&1; do sleep 1; done
-    - echo "Logging into GitLab container registry"
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - echo "Building backend image"
-    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA ./backend
-    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
-    - echo "Building frontend image"
-    - docker build -t $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHORT_SHA ./frontend
-    - docker push $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHORT_SHA
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "development"'
-      when: on_success
-  allow_failure: false
 
 ci-deploy:
   stage: deploy
