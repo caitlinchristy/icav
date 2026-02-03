@@ -1,34 +1,5 @@
-# ##  Start with a base image from Eclipse Temurin (a distribution of OpenJDK) with Alpine 
-# FROM eclipse-temurin:21-jammy as build
-# WORKDIR /workspace/app
-
-
-# ## Copy neccessary files for building the java project
-# COPY gradlew .
-# RUN chmod +x ./gradlew
-# COPY gradle/wrapper/gradle-wrapper.properties ./gradle/wrapper/gradle-wrapper.properties
-# COPY gradle/wrapper/gradle-wrapper.jar ./gradle/wrapper/gradle-wrapper.jar
-
-# COPY build.gradle .
-
-# COPY src src
-
-# ## Ensure the Gradle Wrapper script is executable
-# RUN chmod +x ./gradlew
-
-# ## Use Gradle to build the application using the RUN stanza
-# RUN ./gradlew build
-
-# ## need to add a command to run the app here
-# CMD ["bash", "-c", "java -jar build/libs/notes-app-1.0.jar & tail -f /dev/null"]
-# # this command is useful for debugging because it lets you kill and restart the java process without killing the container
-
-
-
-
-#### Updated - fixed Gradle re-download issue ####
-
 # backend/Dockerfile
+# Use Docker BuildKit syntax
 # syntax=docker/dockerfile:1.6
 
 ##########
@@ -37,25 +8,39 @@
 FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
 
-# Wrapper + build files (only the ones that exist)
+# Copy Gradle wrapper and build files
 COPY gradle/wrapper/ gradle/wrapper/
 COPY gradlew gradlew.bat ./
 COPY build.gradle ./
 
-# Warm Gradle cache so the wrapper doesn’t re-download each build
+# Warm Gradle cache to avoid re-downloading dependencies
 RUN --mount=type=cache,target=/home/gradle/.gradle \
     ./gradlew --no-daemon --version
 
-# Bring in sources and build
+# Copy source code
 COPY src src
+
+# Build the JAR with Gradle
 RUN --mount=type=cache,target=/home/gradle/.gradle \
     ./gradlew --no-daemon clean bootJar
 
 ##########
-# Runtime (multi-arch)
+# Runtime
 ##########
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
+
+# Copy the built JAR from the build stage
 COPY --from=build /app/build/libs/notes-app-1.0.jar app.jar
+
+# Optionally copy Gradle wrapper and source (if you want to allow in-container builds)
+COPY --from=build /app/gradlew /app/gradlew.bat ./
+COPY --from=build /app/gradle ./gradle
+COPY --from=build /app/build.gradle ./
+COPY --from=build /app/src ./src
+
+# Make Gradle wrapper executable
+RUN chmod +x ./gradlew
+
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
