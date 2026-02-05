@@ -8,6 +8,8 @@ const NoteList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'dueDate' | 'createdDate'>('dueDate');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const fetchNotes = async () => {
     try {
@@ -104,9 +106,40 @@ const NoteList: React.FC = () => {
     ? notes.filter(note => note.status === statusFilter)
     : notes;
 
+  // Sort notes by due date or created date
+  const sortedNotes = [...filteredNotes].sort((a, b) => {
+    let aValue: Date | null = null;
+    let bValue: Date | null = null;
+
+    if (sortBy === 'dueDate') {
+      aValue = a.dueDate ? new Date(a.dueDate) : null;
+      bValue = b.dueDate ? new Date(b.dueDate) : null;
+      // Tasks without due dates go to bottom for ascending, top for descending
+      if (aValue === null && bValue === null) return 0;
+      if (aValue === null) return sortOrder === 'asc' ? 1 : -1;
+      if (bValue === null) return sortOrder === 'asc' ? -1 : 1;
+    } else {
+      aValue = a.createdDate ? new Date(a.createdDate) : null;
+      bValue = b.createdDate ? new Date(b.createdDate) : null;
+      if (aValue === null || bValue === null) return 0;
+    }
+
+    const comparison = aValue!.getTime() - bValue!.getTime();
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
+
   const completedCount = filteredNotes.filter(n => n.completed).length;
   const incompleteCount = filteredNotes.length - completedCount;
   const totalCount = filteredNotes.length;
+
+  const handleToggleDueDateSort = () => {
+    if (sortBy === 'dueDate') {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy('dueDate');
+      setSortOrder('asc');
+    }
+  };
 
   return (
     <div className="checklist-container">
@@ -148,6 +181,24 @@ const NoteList: React.FC = () => {
           </div>
         </div>
 
+        <div className="sort-control">
+          <label className="sort-label">Sort by:</label>
+          <button 
+            className={`sort-btn ${sortBy === 'dueDate' ? 'active' : ''}`}
+            onClick={handleToggleDueDateSort}
+            title={`Sort by Due Date (${sortOrder === 'asc' ? 'Earliest first' : 'Latest first'})`}
+          >
+            Due Date {sortBy === 'dueDate' && (sortOrder === 'asc' ? '↑' : '↓')}
+          </button>
+          <button 
+            className={`sort-btn ${sortBy === 'createdDate' ? 'active' : ''}`}
+            onClick={() => setSortBy('createdDate')}
+            title="Sort by Created Date"
+          >
+            Created Date
+          </button>
+        </div>
+
         <div className="progress-info">
           <div className="count-stats">
             <div className="stat">
@@ -171,7 +222,7 @@ const NoteList: React.FC = () => {
       </div>
       
       <ul className="checklist">
-        {filteredNotes.map(note => (
+        {sortedNotes.map(note => (
           <li key={note.id} className={`checklist-item ${note.completed ? 'completed' : ''}`}>
             <div className="checklist-item-content">
               <input
@@ -185,6 +236,9 @@ const NoteList: React.FC = () => {
                 <p className="note-text">{note.text}</p>
                 <div className="note-details">
                   <small className="note-date">Created: {formatDate(note.createdDate)}</small>
+                  {note.dueDate && (
+                    <small className="note-due-date">Due: {new Date(note.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</small>
+                  )}
                   <select 
                     className={`status-dropdown status-${note.status || 'not started'}`}
                     value={note.status || 'not started'}

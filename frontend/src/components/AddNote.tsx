@@ -8,6 +8,7 @@ interface AddNoteProps {
 
 const AddNote: React.FC<AddNoteProps> = ({ onNoteAdded }) => {
   const [text, setText] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,9 +24,13 @@ const AddNote: React.FC<AddNoteProps> = ({ onNoteAdded }) => {
     
     setIsSubmitting(true);
     try {
-      const newNote: Omit<Note, 'id'> = { text: text.trim() };
+      const newNote: Omit<Note, 'id'> = { 
+        text: text.trim(),
+        dueDate: dueDate || undefined,
+      };
       await addNote(newNote);
       setText('');
+      setDueDate('');
       // Call the callback to refresh the notes list
       if (onNoteAdded) {
         onNoteAdded();
@@ -51,8 +56,17 @@ const AddNote: React.FC<AddNoteProps> = ({ onNoteAdded }) => {
           disabled={isSubmitting}
           placeholder="Enter your note here..."
         />
-        {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{error}</p>}
       </div>
+      <div>
+        <label>Due Date</label>
+        <input 
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          disabled={isSubmitting}
+        />
+      </div>
+      {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{error}</p>}
       <button type="submit" disabled={isSubmitting || !text.trim()}>{isSubmitting ? 'Adding...' : 'Add Note'}</button>
     </form>
   );
