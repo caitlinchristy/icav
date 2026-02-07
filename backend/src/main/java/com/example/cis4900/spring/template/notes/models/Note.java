@@ -16,6 +16,7 @@ public class Note {
     private String text;
     
     private Instant createdDate;
+    private Instant modifiedDate;
     
     private Boolean completed = false;
     
@@ -28,6 +29,7 @@ public class Note {
         this.completed = false;
         this.status = "not started";
         this.dueDate = null;
+        this.modifiedDate = null;
     }
 
     public Note(Integer id, String text) {
@@ -61,6 +63,14 @@ public class Note {
 
     public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Instant getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Instant modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
     
     public Boolean getCompleted() {

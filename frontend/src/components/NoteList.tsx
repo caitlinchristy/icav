@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAllNotes, updateNoteStatus } from '../services/noteService';
+import { getAllNotes, updateNoteStatus, updateNote } from '../services/noteService';
 import { Note } from '../types/Note';
 import './NoteList.css';
 
@@ -32,14 +32,127 @@ const NoteList: React.FC = () => {
     fetchNotes();
   }, []);
 
+  const [editingDueDates, setEditingDueDates] = useState<Record<number, string>>({});
+  const [savingDue, setSavingDue] = useState<Record<number, boolean>>({});
+  const [editingTextMode, setEditingTextMode] = useState<Record<number, boolean>>({});
+  const [editingDueMode, setEditingDueMode] = useState<Record<number, boolean>>({});
+  const [editingTexts, setEditingTexts] = useState<Record<number, string>>({});
+
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('Auto-refreshing notes...');
+      // Skip auto-refresh while any note is being edited to avoid closing editors
+      const anyEditing = Object.values(editingTextMode).some(Boolean) || Object.values(editingDueMode).some(Boolean);
+      if (anyEditing) return;
       fetchNotes();
-    }, 1000); // 1 second refresh
+    }, 10000); // 10 second refresh
 
     return () => clearInterval(interval);
-  }, []);
+  }, [editingTextMode, editingDueMode]);
+
+  
+
+  useEffect(() => {
+    const map: Record<number, string> = {};
+    const tmap: Record<number, string> = {};
+    const etmap: Record<number, boolean> = {};
+    const edmap: Record<number, boolean> = {};
+    notes.forEach(n => {
+      if (n.id !== undefined && n.id !== null) {
+        map[n.id] = n.dueDate || '';
+        tmap[n.id] = n.text || '';
+        etmap[n.id] = false;
+        edmap[n.id] = false;
+      }
+    });
+    setEditingDueDates(map);
+    setEditingTexts(tmap);
+    setEditingTextMode(etmap);
+    setEditingDueMode(edmap);
+  }, [notes]);
+  // Auto-complete past due notes (only once after fetch)
+  useEffect(() => {
+    const markPastDue = async () => {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      for (const n of notes) {
+        if (!n) continue;
+        if (n.dueDate && !n.completed) {
+          const d = parseDateOnly(n.dueDate);
+          if (d < today) {
+            try {
+              const updated = { ...n, completed: true, status: 'done' };
+              await updateNote(updated);
+            } catch (err) {
+              console.error('Failed to auto-complete past-due note', err);
+            }
+          }
+        }
+      }
+      // re-fetch to reflect changes
+      fetchNotes();
+    };
+    if (notes.length > 0) markPastDue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notes.length]);
+
+  const handleDueDateChange = (id: number, value: string) => {
+    setEditingDueDates(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleTextChange = (id: number, value: string) => {
+    setEditingTexts(prev => ({ ...prev, [id]: value }));
+  };
+
+  // Helpers to parse and format date-only strings (YYYY-MM-DD) without timezone shifts
+  const parseDateOnly = (dateOnly?: string): Date => {
+    if (!dateOnly) return new Date('');
+    const parts = dateOnly.split('-');
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    return new Date(y, m, d);
+  };
+
+  const formatDueDate = (dateOnly?: string): string => {
+    if (!dateOnly) return 'No date';
+    const date = parseDateOnly(dateOnly);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const handleSaveEdit = async (note: Note) => {
+    // Combined save: if user edited both text and due date, save both
+    const newDate = editingDueDates[note.id] || '';
+    const newText = editingTexts[note.id] ?? note.text;
+    // If nothing changed, just close editors
+    if ((note.dueDate || '') === newDate && (note.text || '') === newText) {
+      setEditingTextMode(prev => ({ ...prev, [note.id]: false }));
+      setEditingDueMode(prev => ({ ...prev, [note.id]: false }));
+      return;
+    }
+    setSavingDue(prev => ({ ...prev, [note.id]: true }));
+    try {
+      const updatedNote: Note = { ...note, dueDate: newDate || undefined, text: newText };
+      await updateNote(updatedNote);
+      const updatedNotes = await getAllNotes();
+      if (Array.isArray(updatedNotes)) setNotes(updatedNotes);
+      setEditingTextMode(prev => ({ ...prev, [note.id]: false }));
+      setEditingDueMode(prev => ({ ...prev, [note.id]: false }));
+    } catch (err) {
+      console.error('Error saving edits:', err);
+    } finally {
+      setSavingDue(prev => ({ ...prev, [note.id]: false }));
+    }
+  };
+
+  const cancelTextEdit = (note: Note) => {
+    setEditingTexts(prev => ({ ...prev, [note.id]: note.text || '' }));
+    setEditingTextMode(prev => ({ ...prev, [note.id]: false }));
+  };
+
+  const cancelDueEdit = (note: Note) => {
+    setEditingDueDates(prev => ({ ...prev, [note.id]: note.dueDate || '' }));
+    setEditingDueMode(prev => ({ ...prev, [note.id]: false }));
+  };
 
   const formatDate = (dateString?: string): string => {
     if (!dateString) return 'No date';
@@ -235,10 +348,48 @@ const NoteList: React.FC = () => {
               <div className="checklist-item-text">
                 <p className="note-text">{note.text}</p>
                 <div className="note-details">
-                  <small className="note-date">Created: {formatDate(note.createdDate)}</small>
-                  {note.dueDate && (
-                    <small className="note-due-date">Due: {new Date(note.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</small>
-                  )}
+                  <small className="note-date">{note.modifiedDate ? `Modified: ${formatDate(note.modifiedDate)}` : `Created: ${formatDate(note.createdDate)}`}</small>
+                  <div className="due-section">
+                    <label className="due-label">Due Date</label>
+                    {editingTextMode[note.id] ? (
+                      <>
+                        <input
+                          id={`text-${note.id}`}
+                          type="text"
+                          className="note-text-input"
+                          value={editingTexts[note.id] || ''}
+                          onChange={(e) => handleTextChange(note.id, e.target.value)}
+                          aria-label={`Edit text for ${note.text}`}
+                        />
+                        <button className="save-btn" onClick={() => handleSaveEdit(note)}>Save</button>
+                        <button className="cancel-btn" onClick={() => cancelTextEdit(note)}>Cancel</button>
+                      </>
+                    ) : editingDueMode[note.id] ? (
+                      <>
+                        <input
+                          id={`due-${note.id}`}
+                          type="date"
+                          className="note-due-input"
+                          value={editingDueDates[note.id] || ''}
+                          onChange={(e) => handleDueDateChange(note.id, e.target.value)}
+                          aria-label={`Due date for ${note.text}`}
+                        />
+                        <button className="save-btn" onClick={() => handleSaveEdit(note)}>Save</button>
+                        <button className="cancel-btn" onClick={() => cancelDueEdit(note)}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="due-text">{note.dueDate ? formatDueDate(note.dueDate) : 'No date'}</span>
+                        <button className="edit-due-btn" onClick={() => setEditingTextMode(prev => ({ ...prev, [note.id]: true }))}>
+                          Edit Text
+                        </button>
+                        <button className="edit-due-btn" onClick={() => setEditingDueMode(prev => ({ ...prev, [note.id]: true }))}>
+                          {note.dueDate ? 'Edit Due Date' : 'Add Due Date'}
+                        </button>
+                      </>
+                    )}
+                    {savingDue[note.id] && <small className="saving-indicator">Saving...</small>}
+                  </div>
                   <select 
                     className={`status-dropdown status-${note.status || 'not started'}`}
                     value={note.status || 'not started'}

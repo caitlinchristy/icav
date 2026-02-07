@@ -1,6 +1,8 @@
 package com.example.cis4900.spring.template.notes;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import java.time.Instant;
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 import com.example.cis4900.spring.template.notes.dao.NotesDao;
@@ -28,6 +30,7 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public String updateNote(Note updatedNote) {
         try {
+            updatedNote.setModifiedDate(Instant.now());
             notesDao.save(updatedNote);
         } catch (Exception exception) {
             return exception.getMessage();
@@ -47,7 +50,21 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public Iterable<Note> allNotes() {
-        return notesDao.findAll();
+        Iterable<Note> notes = notesDao.findAll();
+        LocalDate today = LocalDate.now();
+        for (Note n : notes) {
+            try {
+                if (n.getDueDate() != null && n.getDueDate().isBefore(today) && (n.getCompleted() == null || !n.getCompleted())) {
+                    n.setCompleted(true);
+                    n.setStatus("done");
+                    n.setModifiedDate(Instant.now());
+                    notesDao.save(n);
+                }
+            } catch (Exception e) {
+                // ignore per-note update failures so retrieval still succeeds
+            }
+        }
+        return notes;
     }
 
     @Override
