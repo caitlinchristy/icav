@@ -379,12 +379,20 @@ const NoteList: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <span className="due-text">{note.dueDate ? formatDueDate(note.dueDate) : 'No date'}</span>
+                        <input
+                          id={`due-${note.id}`}
+                          type="date"
+                          className="note-due-input"
+                          value={editingDueDates[note.id] || note.dueDate || ''}
+                          onChange={(e) => handleDueDateChange(note.id, e.target.value)}
+                          aria-label={`Due date for ${note.text}`}
+                          disabled
+                        />
                         <button className="edit-due-btn" onClick={() => setEditingTextMode(prev => ({ ...prev, [note.id]: true }))}>
                           Edit Text
                         </button>
                         <button className="edit-due-btn" onClick={() => setEditingDueMode(prev => ({ ...prev, [note.id]: true }))}>
-                          {note.dueDate ? 'Edit Due Date' : 'Add Due Date'}
+                          {note.dueDate ? 'Edit date' : 'Add date'}
                         </button>
                       </>
                     )}
