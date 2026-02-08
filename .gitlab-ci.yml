@@ -98,6 +98,9 @@ ci-deploy:
   image: alpine:3.18
   before_script:
     - apk add --no-cache openssh-client git
+  variables:
+    SSH_USER = "socs"
+    DEPLOY_PATH = "~/yatdl"
   script:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
