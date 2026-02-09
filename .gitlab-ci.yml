@@ -38,7 +38,7 @@ frontend-test:
   script:
     - cd frontend
     - '[ -f package-lock.json ] && npm ci || npm install'
-    - npm test --if-present --silent -- --passWithNoTests
+    - CI=true npm test --if-present --silent -- --passWithNoTests --coverage
   artifacts:
     when: always
     reports:
