@@ -42,7 +42,16 @@
   border: 1px solid #e0e0e0;
 }
 
-.filter-label {
+.sort-control {
+  margin-bottom: 15px;
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.filter-label,
+.sort-label {
   display: block;
   font-weight: 600;
   color: #333;
@@ -56,7 +65,8 @@
   flex-wrap: wrap;
 }
 
-.filter-btn {
+.filter-btn,
+.sort-btn {
   padding: 6px 14px;
   font-size: 12px;
   border: 1px solid #ddd;
@@ -68,7 +78,8 @@
   font-weight: 500;
 }
 
-.filter-btn:hover {
+.filter-btn:hover,
+.sort-btn:hover {
   border-color: #4caf50;
   background-color: #fff;
   color: #4caf50;
@@ -78,6 +89,12 @@
   background-color: #4caf50;
   color: white;
   border-color: #4caf50;
+}
+
+.sort-btn.active {
+  background-color: #2196F3;
+  color: white;
+  border-color: #2196F3;
 }
 
 .progress-info {
@@ -202,6 +219,90 @@
   display: inline-block;
   color: #999;
   font-size: 12px;
+}
+
+.note-due-input {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+}
+
+.due-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.due-text {
+  font-size: 13px;
+  color: #555;
+  margin-right: 6px;
+}
+
+.edit-due-btn,
+.save-btn,
+.cancel-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.note-text-input {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 180px;
+}
+
+.edit-due-btn + .edit-due-btn {
+  margin-left: 6px;
+}
+
+.edit-due-btn {
+  background: #fff;
+  color: #2196F3;
+  border-color: #e0e0e0;
+}
+
+.edit-due-btn:hover {
+  background: #f0f8ff;
+}
+
+.save-btn {
+  background: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
+}
+
+.save-btn:hover {
+  filter: brightness(0.95);
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #555;
+  border-color: #ddd;
+}
+
+.cancel-btn:hover {
+  background: #eee;
+}
+
+.saving-indicator {
+  font-size: 12px;
+  color: #2196F3;
+}
+
+.due-label {
+  font-size: 12px;
+  color: #666;
+  margin-right: 6px;
 }
 
 .status-dropdown {
