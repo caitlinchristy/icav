@@ -78,8 +78,12 @@ export const updateNote = async (note: Note): Promise<Note> => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    // Backend returns a plain text status; fetch the updated note to return a Note object
+    if (note.id !== undefined && note.id !== null) {
+      const fresh = await getNote(note.id);
+      return fresh;
+    }
+    return note;
   } catch (error) {
     console.error('Error updating note:', error);
     throw error;

@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Note {
@@ -15,15 +16,20 @@ public class Note {
     private String text;
     
     private Instant createdDate;
+    private Instant modifiedDate;
     
     private Boolean completed = false;
     
     private String status = "not started"; // not started, in progress, done
+    
+    private LocalDate dueDate; // YYYY-MM-DD format
 
     public Note() {
         this.createdDate = Instant.now();
         this.completed = false;
         this.status = "not started";
+        this.dueDate = null;
+        this.modifiedDate = null;
     }
 
     public Note(Integer id, String text) {
@@ -32,6 +38,7 @@ public class Note {
         this.createdDate = Instant.now();
         this.completed = false;
         this.status = "not started";
+        this.dueDate = null;
     }
 
     public Integer getId() {
@@ -57,6 +64,14 @@ public class Note {
     public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
     }
+
+    public Instant getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Instant modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
     
     public Boolean getCompleted() {
         return completed;
@@ -74,5 +89,13 @@ public class Note {
         if (status != null && (status.equals("not started") || status.equals("in progress") || status.equals("done"))) {
             this.status = status;
         }
+    }
+    
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 }

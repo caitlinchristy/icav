@@ -17,4 +17,5 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run the app using react-scripts
-CMD ["npm", "start"]
+# Set WDS_SOCKET_HOST to allow WebSocket connections from host
+CMD ["sh", "-c", "HOST=0.0.0.0 npm start"]
